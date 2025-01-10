@@ -1,11 +1,16 @@
 const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 3000;
+const dotenv = require("dotenv");
+const authRoutes = require("./src/routes/auth");
+
+dotenv.config();
 
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 app.use(express.json());
+app.use("/auth", authRoutes);
 
 async function main() {
     // Fetch all users
@@ -20,7 +25,7 @@ async function main() {
   });
 
 app.get('/',(req,res) => {
-    res.send('hello, heropay app');
+    res.send('hello,from the heropay backend app');
 });
 
 app.listen(PORT,() => {
