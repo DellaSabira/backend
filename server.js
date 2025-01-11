@@ -3,6 +3,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const dotenv = require("dotenv");
 const authRoutes = require("./src/routes/auth");
+const userRoutes = require("./routes/userRoutes");
 
 dotenv.config();
 
@@ -11,6 +12,8 @@ const prisma = new PrismaClient();
 
 app.use(express.json());
 app.use("/auth", authRoutes);
+
+app.use("/api", userRoutes);
 
 async function main() {
     // Fetch all users
