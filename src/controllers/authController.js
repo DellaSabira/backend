@@ -2,8 +2,10 @@ const bcrypt = require("bcryptjs");
 const { generateAccessToken, generateRefreshToken } = require("../utils/jwt");
 const jwt = require("jsonwebtoken");
 
-let users = []; // Temporary in-memory storage
-let refreshTokens = []; // Temporary storage for refresh tokens
+
+
+let users = [];
+let refreshTokens = [];
 
 // Register a new user
 const register = async (req, res) => {

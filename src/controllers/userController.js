@@ -1,67 +1,74 @@
-const prisma = require("../prismaClient");
-const bcrypt = require("bcryptjs");
+const prisma = require('../utils/prisma')
+const bcrypt = require('bcryptjs')
 
-// Fetch all users
-const getAllUsers = async (req, res) => {
-  try {
-    const users = await prisma.user.findMany({
-      where: { deleted: false }, // Fetch only non-deleted users
-    });
-    res.json(users);
-  } catch (err) {
-    res.status(500).json({ error: "Failed to fetch users" });
-  }
-};
+//1.fetch all users 
 
-// Fetch a single user by ID
-const getUserById = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const user = await prisma.user.findUnique({
-      where: { id: parseInt(id) },
-    });
-    if (!user || user.deleted) {
-      return res.status(404).json({ error: "User not found" });
+exports.getAllUsers = async (req, res) =>{
+    try{
+        const users = await prisma.user.findMany();
+        res.json(users);
+    }catch(error){
+        res.status(500).json({message:'Error while fetching', error: error.message});
     }
-    res.json(user);
-  } catch (err) {
-    res.status(500).json({ error: "Failed to fetch user" });
-  }
 };
 
-// Update a user’s email or password
-const updateUser = async (req, res) => {
-  try {
+//2.fetch user by id 
+
+exports.getUserById = async (req,res) =>{
     const { id } = req.params;
-    const { email, password } = req.body;
+    try{
+        const user = await prisma.user.findUnique({
+            where:{ id: parseInt(id)}
+        });
 
-    const updatedData = {};
-    if (email) updatedData.email = email;
-    if (password) updatedData.password = await bcrypt.hash(password, 10);
+        if(!user){ 
+            return res.status(404).json({message:'user not found'});
+         }
+        res.json(user);
+    }catch(error){
+        res.status(500).json({message:'Error while fetching user', error: error.message});
+    };
 
-    const updatedUser = await prisma.user.update({
-      where: { id: parseInt(id) },
-      data: updatedData,
-    });
-
-    res.json(updatedUser);
-  } catch (err) {
-    res.status(500).json({ error: "Failed to update user" });
-  }
 };
 
-// Soft delete a user
-const deleteUser = async (req, res) => {
-  try {
+//3.update user
+exports.updateUser = async (req,res) => {
     const { id } = req.params;
-    await prisma.user.update({
-      where: { id: parseInt(id) },
-      data: { deleted: true }, // Mark user as deleted
-    });
-    res.json({ message: "User soft-deleted successfully" });
-  } catch (err) {
-    res.status(500).json({ error: "Failed to delete user" });
-  }
+    const { email, password} = req.body;
+
+    try{
+        const updatedData = {};
+
+        if(email) updatedData.email = email;
+        if(password) updatedData.password = await bcrypt.hash(password, 10);
+
+        if (!email && !password) {
+            return res.status(400).json({ message: 'Nothing to update' }); // Validation check
+        }
+
+        const updatedUser = await prisma.user.update({
+            where: { id: parseInt(id)},
+            data: updatedData,
+        });
+
+        res.json(updatedUser);
+    }catch(error){
+        res.status(500).json({message:'error while updating', error: error.message});
+    }
 };
 
-module.exports = { getAllUsers, getUserById, updateUser, deleteUser };
+//4.delete user 
+exports.deleteUser = async (req,res) =>{
+    const { id } = req.params;
+
+    try{
+        await prisma.user.update({
+            where : {id: parseInt(id)},
+            data: {deleted: true}
+        });
+
+        res.status(204).send();
+    } catch(error){
+        res.status(500).json({message:'error while deleting user', error: error.message});
+    }
+};

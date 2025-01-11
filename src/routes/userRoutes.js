@@ -1,17 +1,11 @@
-const express = require("express");
+const express = require('express');
+const userController = require('../controllers/userController');
 const router = express.Router();
-const {
-  getAllUsers,
-  getUserById,
-  updateUser,
-  deleteUser,
-} = require("../controllers/userController");
-const { authenticate } = require("../middleware/authMiddleware");
 
-// Secure routes with authentication middleware
-router.get("/users", authenticate, getAllUsers);
-router.get("/users/:id", authenticate, getUserById);
-router.put("/users/:id", authenticate, updateUser);
-router.delete("/users/:id", authenticate, deleteUser);
+// Example routes
+router.get('/users', userController.getAllUsers);
+router.get('/:id', userController.getUserById);
+router.put('/:id', userController.updateUser);
+router.delete('/:id', userController.deleteUser);
 
 module.exports = router;
