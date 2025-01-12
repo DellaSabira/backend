@@ -3,7 +3,9 @@ const userAuthMiddleware = require('../middleware/userAuthMiddleware');
 const userController = require('../controllers/userController');
 const router = express.Router();
 
-// Example routes
+// routes
+router.post('/signup', userController.signup); // Signup route
+router.post('/login', userController.login); 
 router.get('/users', userAuthMiddleware, userController.getAllUsers);
 router.get('/:id', userAuthMiddleware, userController.getUserById);
 router.put('/:id', userAuthMiddleware,  userController.updateUser);
